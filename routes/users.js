@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
 
-//CREATE A USER
+//CREATE AN USER
 router.post("/signup", (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -104,7 +104,7 @@ router.post("/login", (req, res) => {
         });
       }
       bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-        console.log(err);
+        console.log(err); 
         if (err) {
           return res.status(401).json({
             message: "Invalid Auth",

@@ -3,9 +3,11 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const Order = require("../models/order");
 const Product = require("../models/product");
+const checkAuth = require("../middleware/auth_check");
+
 
 //GET ALL ORDERS
-router.get("/", (req, res, next) => {
+router.get("/",checkAuth, (req, res, next) => {
   Order.find()
     .select("product quantity _id ")
     .populate("product", "name price")
@@ -39,7 +41,7 @@ router.get("/", (req, res, next) => {
 
 
 //CREATE AN ORDER
-router.post("/", (req, res, next) => {
+router.post("/",checkAuth,checkAuth, (req, res, next) => {
   Product.findById(req.body.productId)
     .then((product) => {
       console.log(product);
@@ -85,8 +87,7 @@ router.post("/", (req, res, next) => {
  
 
 //FETCH A SINGLE ORDER
-router.get("/:orderId", (req, res, next) => {
-
+router.get("/:orderId", checkAuth, (req, res, next) => {
   Order.findById(req.params.orderId)
 
     .populate("product", "name price")
@@ -118,7 +119,7 @@ router.get("/:orderId", (req, res, next) => {
 
 
 //DELETE AN ORDER
-router.delete("/:orderId", (req, res, next) => {
+router.delete("/:orderId", checkAuth, (req, res, next) => {
 
   Order.findByIdAndDelete({ _id: req.params.orderId })
     .exec().

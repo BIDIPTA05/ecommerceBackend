@@ -2,14 +2,16 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/product");
 const mongoose = require("mongoose");
+const checkAuth = require("../middleware/auth_check");
 
 
-//GET ROUTE
+//GET ROUTE- GET ALL PRODUCTS
 router.get("/", (req, res, next) => {
   Product.find().select("name price _id")
     .exec()
     .then((docs) => {
-      message: "Handling GET requests to /products", console.log(docs);
+      message: "Handling GET requests to /products",
+        console.log(docs);
       const response = {
         count: docs.length,
         products: docs.map((doc) => {
@@ -36,8 +38,8 @@ router.get("/", (req, res, next) => {
 
 
 
-//POST ROUTE
-router.post("/", (req, res, next) => {
+//POST ROUTE- UPLOAD A PRODUCT
+router.post("/",checkAuth, (req, res, next) => {
   // const product = {
   //     name: req.body.name,
   //     price: req.body.price
@@ -118,7 +120,7 @@ router.get("/:productId", (req, res, next) => {
 
 
 //UPDATE PRODUCT ROUTE
-router.patch("/:productId", (req, res, next) => {
+router.patch("/:productId", checkAuth,(req, res, next) => {
     const id = req.params.productId;
     const updateOps = {};
     for (const ops of req.body) {
@@ -152,7 +154,7 @@ router.patch("/:productId", (req, res, next) => {
 
 
 //DELETE PRODUCT ROUTE
-router.delete("/:productId", (req, res, next) => {
+router.delete("/:productId",checkAuth, (req, res, next) => {
   const id = req.params.productId;
   Product.findByIdAndDelete({ _id: id })
     .exec()
