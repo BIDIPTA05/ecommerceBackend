@@ -2,7 +2,7 @@ const Product = require("../models/product");
 const mongoose = require("mongoose");
 
 //GET ALL PRODUCTS
-module.exports = get_product_control = (req, res, next) => {
+exports.get_product_control = (req, res, next) => {
   Product.find()
     .select("name price _id")
     .exec()
@@ -34,7 +34,7 @@ module.exports = get_product_control = (req, res, next) => {
 
 
 //UPLOAD A PRODUCT
-module.exports = post_product_control = (req, res, next) => {
+exports.post_product_control = (req, res, next) => {
   // const product = {
   //     name: req.body.name,
   //     price: req.body.price
@@ -74,7 +74,7 @@ module.exports = post_product_control = (req, res, next) => {
 
 
 //GET A SINGLE PRODUCT
-module.exports = getSingle_product_control = (req, res, next) => {
+exports.getSingle_product_control = (req, res, next) => {
   const id = req.params.productId;
   // if (id === 'special') {
   //     res.status(200).json({
@@ -114,7 +114,7 @@ module.exports = getSingle_product_control = (req, res, next) => {
 
 
 //UPDATE A PRODUCT
-module.exports = update_product_control = (req, res, next) => {
+exports.update_product_control = (req, res, next) => {
   const id = req.params.productId;
   const updateOps = {};
   for (const ops of req.body) {
@@ -142,8 +142,8 @@ module.exports = update_product_control = (req, res, next) => {
 };
 
 
-
-module.exports = delete_product_control = (req, res, next) => {
+//DELETE A PRODUCT
+exports.delete_product_control = (req, res, next) => {
   const id = req.params.productId;
   Product.findByIdAndDelete({ _id: id })
     .exec()

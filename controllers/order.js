@@ -2,8 +2,7 @@ const Product = require("../models/product");
 const Order = require("../models/order")
 const mongoose = require("mongoose");
 
-
-module.exports = get_order_control = (req, res, next) => {
+exports.get_order_control = (req, res, next) => {
   Order.find()
     .select("product quantity _id ")
     .populate("product", "name price")
@@ -35,7 +34,7 @@ module.exports = get_order_control = (req, res, next) => {
 };
 
 
-module.exports = create_order_control = (req, res, next) => {
+exports.create_order_control = (req, res, next) => {
   Product.findById(req.body.productId)
     .then((product) => {
       console.log(product);
@@ -77,7 +76,7 @@ module.exports = create_order_control = (req, res, next) => {
 };
 
 
-module.exports = fetch_Singleorder_control = (req, res, next) => {
+exports.fetch_Singleorder_control = (req, res, next) => {
   Order.findById(req.params.orderId)
 
     .populate("product", "name price")
@@ -105,7 +104,7 @@ module.exports = fetch_Singleorder_control = (req, res, next) => {
     });
 };
 
-module.exports = delete_order_control = (req, res, next) => {
+exports.delete_order_control = (req, res, next) => {
   Order.findByIdAndDelete({ _id: req.params.orderId })
     .exec()
     .then((result) => {

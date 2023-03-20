@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 
-module.exports = create_user_control = (req, res, next) => {
+exports.create_user_control = (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
     .then((user) => {
@@ -46,48 +46,8 @@ module.exports = create_user_control = (req, res, next) => {
 };
 
 
-module.exports = delete_user_control = (req, res, next) => {
-  User.findByIdAndDelete({ _id: req.params.userId })
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "User deleted",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-};
 
-module.exports = get_allUsers_control = (req, res, next) => {
-  User.find()
-    .select("name email _id")
-    .exec()
-    .then((docs) => {
-      const response = {
-        count: docs.length,
-        users: docs.map((doc) => {
-          return {
-            name: doc.name,
-            email: doc.email,
-            _id: doc._id,
-          };
-        }),
-      };
-      res.status(200).json(response);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-};
-
-module.exports = login_user_control = (req, res) => {
+exports.login_user_control = (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
     .then((user) => {
@@ -100,10 +60,12 @@ module.exports = login_user_control = (req, res) => {
         console.log(err);
         if (err) {
           return res.status(401).json({
+            error: err,
             message: "Invalid Auth",
           });
         }
         if (result) {
+          console.log(result);
           const token = jwt.sign(
             {
               email: user[0].email,
@@ -127,6 +89,47 @@ module.exports = login_user_control = (req, res) => {
       console.log(err);
       return res.status(500).json({
         message: "unsuccessful attempt",
+        error: err,
+      });
+    });
+};
+
+exports.delete_user_control = (req, res, next) => {
+  User.findByIdAndDelete({ _id: req.params.userId })
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "User deleted",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
+
+exports.get_allUsers_control = (req, res, next) => {
+  User.find()
+    .select("name email _id")
+    .exec()
+    .then((docs) => {
+      const response = {
+        count: docs.length,
+        users: docs.map((doc) => {
+          return {
+            name: doc.name,
+            email: doc.email,
+            _id: doc._id,
+          };
+        }),
+      };
+      res.status(200).json(response);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
         error: err,
       });
     });
