@@ -1,6 +1,7 @@
 const Product = require("../models/product");
 const mongoose = require("mongoose");
 
+
 //GET ALL PRODUCTS
 exports.get_product_control = (req, res, next) => {
   Product.find()
@@ -14,6 +15,7 @@ exports.get_product_control = (req, res, next) => {
           return {
             name: doc.name,
             price: doc.price,
+            rating : doc.rating,
             _id: doc._id,
             request: {
               type: "GET",
@@ -35,16 +37,12 @@ exports.get_product_control = (req, res, next) => {
 
 //UPLOAD A PRODUCT
 exports.post_product_control = (req, res, next) => {
-  // const product = {
-  //     name: req.body.name,
-  //     price: req.body.price
-  // };
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
+    rating:req.body.rating
   });
-
   product
     .save()
     .then((result) => {
@@ -54,6 +52,7 @@ exports.post_product_control = (req, res, next) => {
         createdProduct: {
           name: result.name,
           price: result.price,
+          rating:result.rating,
           _id: result._id,
           request: {
             type: "GET",
@@ -62,7 +61,6 @@ exports.post_product_control = (req, res, next) => {
         },
       });
     })
-
     .catch((err) => {
       console.log(err);
       res.status(500).json({

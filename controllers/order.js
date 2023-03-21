@@ -78,7 +78,6 @@ exports.create_order_control = (req, res, next) => {
 
 exports.fetch_Singleorder_control = (req, res, next) => {
   Order.findById(req.params.orderId)
-
     .populate("product", "name price")
     .exec()
     .then((order) => {
