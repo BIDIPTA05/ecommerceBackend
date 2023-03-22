@@ -2,6 +2,8 @@ const mongoose = require("mongoose")
 const Product = require("../models/product")
 const Cart = require("../models/cart")
 
+
+//ADD TO CART
 exports.create_cart_control = (req, res, next) => {
   Cart.find({ product: req.body.productId })
     .exec()
@@ -43,7 +45,7 @@ exports.create_cart_control = (req, res, next) => {
     });
 };
 
-
+//GET ALL CART ITEMS
 exports.get_cart_control = (req, res, next) => {
     Cart.find()
         .select("product quantity _id ")
@@ -76,7 +78,7 @@ exports.get_cart_control = (req, res, next) => {
 }
     
 
-//Single Cart item
+//SINGLE CART ITEM
 exports.get_cart_item_control = (req, res, next) => {
     const id = req.params.cartId;
     Cart.findById(id)      
@@ -102,4 +104,29 @@ exports.get_cart_item_control = (req, res, next) => {
         error: err,
       });
     });
+}
+
+//DELETE CART ITEM
+exports.delete_cart_item_control = (req, res, next) => {
+    const id = req.params.cartId;
+    Cart.findByIdAndDelete(id)
+        .exec()
+        .then((result) => {
+            res.status(200).json({
+                message: "Cart item deleted",
+                request: {
+                    type: "POST",
+                    url: "http://localhost:3000/cart",
+                    body: { productId: "ID", quantity: "Number" },
+                },
+            });
+        }
+    )
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+                error: err,
+            });
+        }
+    );
 }

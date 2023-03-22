@@ -14,6 +14,6 @@ router.get("/",  cartController.get_cart_control);
 router.get("/:cartId",  cartController.get_cart_item_control);
 
 //DELETE A PRODUCT FROM CART
-//router.delete("/:productId",  cartController.delete_order_control);
+router.delete("/:cartId",  cartController.delete_cart_item_control);
 
 module.exports = router;
