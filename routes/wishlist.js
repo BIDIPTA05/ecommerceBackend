@@ -8,6 +8,9 @@ router.get("/", wishController.get_wishlist_control);
 //ADD A PRODUCT TO WISHLIST
 router.post("/", wishController.create_wishlist_control);
 
+//FETCH A PRODUCT FROM WISHLIST
+router.get("/:wishlistId", wishController.get_wishlist_item_control);
+
 //DELETE A PRODUCT FROM WISHLIST
 router.delete("/:wishlistId", wishController.delete_wishlist_control );
 

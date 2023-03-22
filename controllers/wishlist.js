@@ -137,3 +137,28 @@ exports.delete_wishlist_control = (req, res, next) => {
             });
         });
 }
+
+
+//GET SINGLE ITEM FROM WISHLIST
+exports.get_wishlist_item_control = (req, res, next) => {
+    const id = req.params.wishlistId;
+    Wishlist.findById(id)
+        .select("product _id")
+        .populate("product")    
+        .exec()
+        .then((doc) => {
+            console.log("From database", doc);
+            if (doc) {
+                res.status(200).json({
+                    wishlist: doc,
+                    request: {
+                        type: "GET",
+                        url: "http://localhost:3000/wishlist",
+                    },
+                });
+            } else {
+                res.status(404).json({ message: "No valid entry found for provided ID" });
+            }
+        })
+    
+}
