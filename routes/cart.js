@@ -11,7 +11,7 @@ router.post("/", cartController.create_cart_control);
 router.get("/",  cartController.get_cart_control);
 
 //FETCH A PRODUCT FROM CART
-//router.get("/:productId",  cartController.fetch_Singleorder_control);
+router.get("/:cartId",  cartController.get_cart_item_control);
 
 //DELETE A PRODUCT FROM CART
 //router.delete("/:productId",  cartController.delete_order_control);

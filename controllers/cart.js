@@ -79,12 +79,11 @@ exports.get_cart_control = (req, res, next) => {
 //Single Cart item
 exports.get_cart_item_control = (req, res, next) => {
     const id = req.params.cartId;
-    Cart.findById(id)
-        .select("product quantity _id ")
+    Cart.findById(id)      
         .populate("product", "name price")
         .exec()
         .then((doc) => {
-            console.log("From database", doc);
+            console.log("From Cart", doc);
             if (doc) {
                 res.status(200).json({
                     cart: doc,
