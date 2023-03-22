@@ -12,6 +12,7 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const userRoutes = require('./routes/users');
 const wishlistRoutes = require('./routes/wishlist');
+const cartRoutes = require('./routes/cart');
 
   
 const DB = process.env.MONGO_URI;
@@ -33,6 +34,7 @@ app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 app.use('/users', userRoutes);
 app.use('/wishlist', wishlistRoutes);
+app.use('/cart', cartRoutes);
 
 
 
