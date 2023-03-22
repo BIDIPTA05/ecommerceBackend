@@ -73,4 +73,34 @@ exports.get_cart_control = (req, res, next) => {
             error: err,
         });
         });
-    }
+}
+    
+
+//Single Cart item
+exports.get_cart_item_control = (req, res, next) => {
+    const id = req.params.cartId;
+    Cart.findById(id)
+        .select("product quantity _id ")
+        .populate("product", "name price")
+        .exec()
+        .then((doc) => {
+            console.log("From database", doc);
+            if (doc) {
+                res.status(200).json({
+                    cart: doc,
+                    request: {
+                        type: "GET",
+                        url: "http://localhost:3000/cart",
+                    },
+                });
+            } else {
+                res.status(404).json({ message: "No valid entry found for provided ID" });
+            }
+        })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+}
