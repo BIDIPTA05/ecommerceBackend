@@ -14,7 +14,7 @@ router.get("/:wishlistId", wishController.get_wishlist_item_control);
 //DELETE A PRODUCT FROM WISHLIST
 router.delete("/:wishlistId", wishController.delete_wishlist_control );
 
-//testingg
+//testinggg
 
 module.exports = router;
 
