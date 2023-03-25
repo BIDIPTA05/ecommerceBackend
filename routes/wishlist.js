@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+
 const wishController = require("../controllers/wishlist");
 
 //GET ALL WISHLIST ITEMS
@@ -12,7 +13,10 @@ router.post("/", wishController.create_wishlist_control);
 router.get("/:wishlistId", wishController.get_wishlist_item_control);
 
 //DELETE A PRODUCT FROM WISHLIST
-router.delete("/:wishlistId", wishController.delete_wishlist_control );
+router.delete("/:wishlistId", wishController.delete_wishlist_control);
+
+//ADD TO CART FROM WISHLIST
+router.post("/movetocart", wishController.move_to_cart);
 
 //testinggg
 
