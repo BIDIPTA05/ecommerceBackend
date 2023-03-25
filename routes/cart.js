@@ -14,6 +14,14 @@ router.get("/",  cartController.get_cart_control);
 router.get("/:cartId",  cartController.get_cart_item_control);
 
 //DELETE A PRODUCT FROM CART
-router.delete("/:cartId",  cartController.delete_cart_item_control);
+router.delete("/:cartId", cartController.delete_cart_item_control);
+
+//MOVE TO WISHLIST FROM CART
+router.post("/movetowishlist", cartController.move_to_wishlist);
+
+//MOVE TO ORDERS FROM CART
+//router.post("/movetoorders", cartController.move_to_orders);
+
+
 
 module.exports = router;

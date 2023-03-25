@@ -165,11 +165,8 @@ exports.get_wishlist_item_control = (req, res, next) => {
 //MOVE ITEM FROM WISHLIST TO CART
 exports.move_to_cart = (req, res, next) => {
   //const productId = new mongoose.Types.ObjectId(req.body.productId);
-
     const productId = req.body.productId;
-
-
-  console.log({ productId });
+  
   // check if the product exists in the wishlist
   Wishlist.findById({ _id: productId })
     .exec()

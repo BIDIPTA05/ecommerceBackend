@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const Product = require("../models/product")
 const Cart = require("../models/cart")
+const Wishlist = require("../models/wishlist")
 
 
 //ADD TO CART
@@ -130,3 +131,69 @@ exports.delete_cart_item_control = (req, res, next) => {
         }
     );
 }
+
+
+//MOVE TO WISHLIST
+exports.move_to_wishlist = (req, res, next) => {
+      const productId = req.body.productId;
+      // check if the product exists in the wishlist
+      Cart.findById({ _id: productId })
+        .exec()
+        .then((cartitems) => {
+          console.log({ cartitems });
+
+          if (!cartitems) {
+            return res.status(404).json({
+              message: "Product not found in cart",
+            });
+          } else {
+            // create a new cart item with the wishlist product details
+            const cartItems = new Wishlist({
+              _id: new mongoose.Types.ObjectId(),
+              product: cartitems.product,
+              name: cartitems.name,
+            });
+            // save the cart item to the cart collection
+            cartItems
+              .save()
+              .then((result) => {
+                console.log(result);
+                // remove the product from the wishlist
+                Cart.findByIdAndDelete(cartitems._id)
+                  .exec()
+                  .then(() => {
+                    res.status(200).json({
+                      message: "Product moved from cart to wishlist",
+                      movedItem: {
+                        _id: result._id,
+                        product: result.product,
+                        name: result.name,
+                        request: {
+                          type: "GET",
+                          url: "http://localhost:3000/cart/" + result._id,
+                        },
+                      },
+                    });
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    res.status(500).json({
+                      error: err,
+                    });
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                  error: err,
+                });
+              });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: err,
+          });
+        });
+} 
