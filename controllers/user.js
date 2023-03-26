@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 
+
+//NEW USER CREATE
 exports.create_user_control = (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -46,7 +48,7 @@ exports.create_user_control = (req, res, next) => {
 };
 
 
-
+//LOGIN USER
 exports.login_user_control = (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -94,6 +96,8 @@ exports.login_user_control = (req, res, next) => {
     });
 };
 
+
+//DELETE AN USER
 exports.delete_user_control = (req, res, next) => {
   User.findByIdAndDelete({ _id: req.params.userId })
     .exec()
@@ -110,6 +114,7 @@ exports.delete_user_control = (req, res, next) => {
     });
 };
 
+//GET ALL USERS
 exports.get_allUsers_control = (req, res, next) => {
   User.find()
     .select("name email _id")
@@ -134,3 +139,56 @@ exports.get_allUsers_control = (req, res, next) => {
       });
     });
 };
+
+//SET AN USER AS SUPER ADMIN
+exports.set_super_admin = (req, res, next)=>{
+  const userId = req.params.userId;
+  // Find the user with the provided ID
+  console.log(userId);
+  User.findById(userId)
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Update the user to be a super admin
+      user.isSuperAdmin = true;
+      return user.save();
+    })
+    .then(user => {
+      res.json(user);
+    })
+    .catch((err) => {
+    res.status(500).json({
+      error :err
+    })
+    })
+}
+
+
+//GET ALL SUPER ADMINS
+exports.get_super_admin = (req, res, next) => {
+  User.find({ isSuperAdmin : true })
+    .exec()
+    .then((users) => {
+      
+        res.status(200).json({
+          count: users.length,
+          message: "List of Super Admins fetched",
+          superAdmins: users.map((users) => {
+            return {
+              _id: users._id,
+              name: users.name,
+              email: users.email,
+            };
+          }),
+        });
+      })
+
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+}

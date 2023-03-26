@@ -20,7 +20,7 @@ router.delete("/:cartId", cartController.delete_cart_item_control);
 router.post("/movetowishlist", cartController.move_to_wishlist);
 
 //MOVE TO ORDERS FROM CART
-//router.post("/movetoorders", cartController.move_to_orders);
+router.post("/movetoorders", cartController.move_to_orders);
 
 
 

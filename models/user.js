@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema({
     match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
   },
   password: { type: String, required: true },
+  isSuperAdmin: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("User", userSchema);
