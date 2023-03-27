@@ -16,6 +16,7 @@ exports.get_order_control = (req, res, next) => {
             _id: doc._id,
             product: doc.product,
             quantity: doc.quantity,
+            date: doc.date,
 
             request: {
               type: "GET",
@@ -48,6 +49,7 @@ exports.create_order_control = (req, res, next) => {
         quantity: req.body.quantity,
         product: req.body.productId,
         name: req.body.name,
+        date : req.body.date
       })
         .save()
         .then((result) => {
@@ -58,6 +60,7 @@ exports.create_order_control = (req, res, next) => {
               _id: result._id,
               product: result.product,
               quantity: result.quantity,
+              date: result.date
             },
             request: {
               type: "GET",

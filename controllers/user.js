@@ -27,6 +27,8 @@ exports.create_user_control = (req, res, next) => {
               name: req.body.name,
               password: hash,
             });
+
+            req.session.user_id = user._id;
             
             user
               .save()

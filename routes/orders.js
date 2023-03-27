@@ -8,7 +8,7 @@ const ordersController = require("../controllers/order")
 router.get("/",checkAuth,ordersController.get_order_control );
 
 //CREATE AN ORDER
-router.post("/", checkAuth, ordersController.create_order_control);
+router.post("/", ordersController.create_order_control);
 
 //FETCH A SINGLE ORDER
 router.get("/:orderId", checkAuth, ordersController.fetch_Singleorder_control);
