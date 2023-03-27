@@ -1,13 +1,14 @@
-const user = require("../models/user")
+const User = require("../models/user")
 const mongoose = require("mongoose")
 
-module.exports = (req, res, next) => {
-    const user = req.user;
-  if (user && user.isSuperAdmin) {
+
+
+const isSuperAdmin = (req, res, next) => {
+  if (req.body.email === "bidipta@admin.com") {
     next();
   } else {
-    res.status(401).send({ message: "Unauthorized" });
+    res.status(401).json({ message: "Not authorized as admin" });
   }
 };
 
-
+module.exports = isSuperAdmin;

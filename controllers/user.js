@@ -27,6 +27,7 @@ exports.create_user_control = (req, res, next) => {
               name: req.body.name,
               password: hash,
             });
+            
             user
               .save()
               .then((result) => {
@@ -140,30 +141,31 @@ exports.get_allUsers_control = (req, res, next) => {
     });
 };
 
-//SET AN USER AS SUPER ADMIN
-exports.set_super_admin = (req, res, next)=>{
-  const userId = req.params.userId;
-  // Find the user with the provided ID
-  console.log(userId);
-  User.findById(userId)
-    .then(user => {
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
 
-      // Update the user to be a super admin
-      user.isSuperAdmin = true;
-      return user.save();
-    })
-    .then(user => {
-      res.json(user);
-    })
-    .catch((err) => {
-    res.status(500).json({
-      error :err
-    })
-    })
-}
+//SET AN USER AS SUPER ADMIN
+// exports.set_super_admin = (req, res, next)=>{
+//   const userId = req.params.userId;
+//   // Find the user with the provided ID
+//   console.log(userId);
+//   User.findById(userId)
+//     .then(user => {
+//       if (!user) {
+//         return res.status(404).json({ message: 'User not found' });
+//       }
+
+//       // Update the user to be a super admin
+//       user.isSuperAdmin = true;
+//       return user.save();
+//     })
+//     .then(user => {
+//       res.json(user);
+//     })
+//     .catch((err) => {
+//     res.status(500).json({
+//       error :err
+//     })
+//     })
+// }
 
 
 //GET ALL SUPER ADMINS

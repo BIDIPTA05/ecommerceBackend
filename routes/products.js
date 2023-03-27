@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const checkAuth = require("../middleware/auth_check");
 const productController = require("../controllers/product");
-const isAdmin = require("../middleware/isAdmin")
+const isSuperAdmin = require("../middleware/isAdmin")
 
 
 //GET ROUTE- GET ALL PRODUCTS
-router.get("/",isAdmin, productController.get_product_control);
+router.get("/",isSuperAdmin, productController.get_product_control);
 
 //POST ROUTE- UPLOAD A PRODUCT
 router.post("/", checkAuth, productController.post_product_control);
