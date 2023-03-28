@@ -5,6 +5,7 @@ const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 
 
+
 //NEW USER CREATE
 exports.create_user_control = (req, res, next) => {
   User.find({ email: req.body.email })
@@ -28,7 +29,7 @@ exports.create_user_control = (req, res, next) => {
               password: hash,
             });
 
-            req.session.user_id = user._id;
+            
             
             user
               .save()
@@ -53,7 +54,7 @@ exports.create_user_control = (req, res, next) => {
 
 //LOGIN USER
 exports.login_user_control = (req, res, next) => {
-  User.find({ email: req.body.email })
+  User.findOne({ email: req.body.email })
     .exec()
     .then((user) => {
       if (user.length < 1) {
@@ -61,7 +62,7 @@ exports.login_user_control = (req, res, next) => {
           message: "Invalid Auth",
         });
       }
-      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+      bcrypt.compare(req.body.password, user.password, (err, result) => {
         console.log(err);
         if (err) {
           return res.status(401).json({
@@ -70,21 +71,27 @@ exports.login_user_control = (req, res, next) => {
           });
         }
         if (result) {
+          req.session.user_id = user._id;
           console.log(result);
           const token = jwt.sign(
             {
-              email: user[0].email,
-              userId: user[0]._id,
+              email: user.email,
+              userId: user._id,
             },
             process.env.JWT_KEY,
             { expiresIn: "1h" }
           );
+          
           console.log(token);
           return res.status(200).json({
             message: "Successfully Logged in",
             token: token,
           });
+          
+          console.log(req.session);
+          
         }
+        
         return res.status(401).json({
           message: "Invalid Auth",
         });

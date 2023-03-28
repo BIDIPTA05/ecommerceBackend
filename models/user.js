@@ -1,6 +1,15 @@
 const mongoose = require("mongoose");
 const Product = require("./product");
 
+const wishlistSchema = mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product",
+    required: true,
+  },
+});
+
 const userSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   name: { type: String, required: true },
@@ -11,7 +20,14 @@ const userSchema = mongoose.Schema({
     match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
   },
   password: { type: String, required: true },
+
   isSuperAdmin: { type: Boolean, default: false },
+  wishList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", userSchema);
