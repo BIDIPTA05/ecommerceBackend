@@ -77,7 +77,7 @@ exports.get_wishlist_control = (req, res, next) => {
 //     });
 // };
 
-//ADD TO WISHLIST
+//ADD TO WISHLIST of specific loged in user
 exports.create_wishlist_control = async (req, res, next) => {
   try {
     const  id  = req.body.productId;
@@ -93,7 +93,7 @@ exports.create_wishlist_control = async (req, res, next) => {
         message: "Item is already in Wish list",
       });
     }
-    user.wishList.push(product);
+    user.wishList.push(product._id);
     await user.save();
     res.status(200).json({
       message: "Product added to Wish List",

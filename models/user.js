@@ -22,12 +22,28 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
 
   isSuperAdmin: { type: Boolean, default: false },
+  
   wishList: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
     },
-  ],
+  ]
+  // cart: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Product",
+  //   },
+  // ],
+
+  // orders: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Order",
+  //   },
+  // ],
+
+
 });
 
 module.exports = mongoose.model("User", userSchema);
