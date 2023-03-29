@@ -241,10 +241,16 @@ exports.move_to_cart = (req, res, next) => {
         return res.status(404).json({
           message: "Product not found in wishlist",
         });
+      }
+        else if (wishlistItem.userId != req.userData.userId) {
+          return res.status(401).json({
+            message: "You are not authorized to move this product to cart",
+          });
+        
       } else {
         // create a new cart item with the wishlist product details
           const cartItem = new Cart({
-      _id: new mongoose.Types.ObjectId(),
+         _id: new mongoose.Types.ObjectId(),
           product: wishlistItem.product,
           name: wishlistItem.name,
         });
