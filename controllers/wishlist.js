@@ -11,6 +11,11 @@ exports.get_wishlist_control = (req, res, next) => {
     .populate("product")
     .exec()
     .then((wishlist) => {
+      if (wishlist.length == 0) {
+        return res.status(404).json({
+          message: "No items in wishlist",
+        });
+      }
       res.status(200).json({
         count: wishlist.length,
         wishlist: wishlist.map((item) => {
@@ -81,36 +86,58 @@ exports.get_wishlist_control = (req, res, next) => {
 
 //ADD TO WISHLIST of specific loged in user
 exports.create_wishlist_control = (req, res, next) => {
-  const wishlist = new Wishlist({
-    _id: new mongoose.Types.ObjectId(),
-    userId: req.userData.userId, // Get the user ID from the decoded token
-    product: req.body.productId,
 
-  });
-  console.log({wishlist})
+  if (req.userData.userId == null) {
+    return res.status(401).json({
+      message: "You are not authorized to add to wishlist",
+    });
+  }
+  Product.findById(req.body.productId)
+    .then((product) => {
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+      else {
+        const wishlist = new Wishlist({
+          _id: new mongoose.Types.ObjectId(),
+          userId: req.userData.userId, // Get the user ID from the decoded token
+          product: req.body.productId,
+        });
+        console.log({ wishlist });
+        wishlist
+          .save()
+          .then((result) => {
+            console.log(wishlist);
 
-  wishlist
-    .save()
-    .then((result) => {
-      console.log(wishlist);
-      res.status(201).json({
-        message: "Product added to wishlist",
-        createdWishlist: {
-          _id: result._id,
-          product: result.product,
-          request: {
-            type: "GET",
-            url: "http://localhost:3000/wishlist/" + result._id,
-          },
-        },
-      });
+            res.status(201).json({
+              message: "Product added to wishlist",
+              createdWishlist: {
+                _id: result._id,
+                product: result.product,
+                request: {
+                  type: "GET",
+                  url: "http://localhost:3000/wishlist/" + result._id,
+                },
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
     })
     .catch((err) => {
       console.log(err);
       res.status(500).json({
         error: err,
       });
-    });
+    }
+    );
 };
 
 //DELETE ITEM FROM WISHLIST
