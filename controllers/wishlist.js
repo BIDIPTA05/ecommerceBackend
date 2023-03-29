@@ -3,24 +3,24 @@ const Product = require("../models/product");
 const mongoose = require("mongoose");
 const Cart = require("../models/cart");
 const User = require("../models/user");
+const Wishlist = require("../models/wishlist");
 
-//ALL ITEMS IN WISHLIST
+//ALL ITEMS IN WISHLIST user specific
 exports.get_wishlist_control = (req, res, next) => {
-  Wishlist.find()
-    .select("product _id")
-    .populate("product", "name price")
+  Wishlist.find({ userId: req.userData.userId })
+    .populate("product")
     .exec()
-    .then((docs) => {
+    .then((wishlist) => {
       res.status(200).json({
-        count: docs.length,
-        message: "Wishlist fetched",
-        wishlist: docs.map((doc) => {
+        count: wishlist.length,
+        wishlist: wishlist.map((item) => {
           return {
-            _id: doc._id,
-            product: doc.product,
+            _id: item._id,
+            product: item.productId,
+            name: item.name,
             request: {
               type: "GET",
-              url: "http://localhost:3000/wishlist/" + doc._id,
+              url: "http://localhost:3000/wishlist/" + item._id,
             },
           };
         }),
@@ -33,6 +33,8 @@ exports.get_wishlist_control = (req, res, next) => {
       });
     });
 };
+
+
 
 
 //ADD ITEM TO WISHLIST
@@ -78,44 +80,65 @@ exports.get_wishlist_control = (req, res, next) => {
 // };
 
 //ADD TO WISHLIST of specific loged in user
-exports.create_wishlist_control = async (req, res, next) => {
-  try {
-    const  id  = req.body.productId;
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(400).json({
-        message: "Product not found",
+exports.create_wishlist_control = (req, res, next) => {
+  const wishlist = new Wishlist({
+    _id: new mongoose.Types.ObjectId(),
+    userId: req.userData.userId, // Get the user ID from the decoded token
+    product: req.body.productId,
+
+  });
+  console.log({wishlist})
+
+  wishlist
+    .save()
+    .then((result) => {
+      console.log(wishlist);
+      res.status(201).json({
+        message: "Product added to wishlist",
+        createdWishlist: {
+          _id: result._id,
+          product: result.product,
+          request: {
+            type: "GET",
+            url: "http://localhost:3000/wishlist/" + result._id,
+          },
+        },
       });
-    }
-    const user = await User.findById(req.session.user_id);
-    if (user.wishList.includes(product._id)) {
-      return res.json({
-        message: "Item is already in Wish list",
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
       });
-    }
-    user.wishList.push(product._id);
-    await user.save();
-    res.status(200).json({
-      message: "Product added to Wish List",
-      user,
     });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({
-      
-      message: "Error",
-      err,
-    });
-  }
 };
 
-
-
-
-
 //DELETE ITEM FROM WISHLIST
+// exports.delete_wishlist_control = (req, res, next) => {
+//   Wishlist.findByIdAndDelete({ _id: req.params.wishlistId })
+//     .exec()
+//     .then((result) => {
+//       res.status(200).json({
+//         message: "Product removed from wishlist",
+//         request: {
+//           type: "POST",
+//           url: "http://localhost:3000/wishlist",
+//           body: { productId: "ID" },
+//         },
+//       });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).json({
+//         error: err,
+//       });
+//     });
+// };
+
+
 exports.delete_wishlist_control = (req, res, next) => {
-  Wishlist.findByIdAndDelete({ _id: req.params.wishlistId })
+  const wishlistItemId = req.params.wishlistId;
+  Wishlist.findByIdAndDelete(wishlistItemId)
     .exec()
     .then((result) => {
       res.status(200).json({
@@ -135,30 +158,39 @@ exports.delete_wishlist_control = (req, res, next) => {
     });
 };
 
+
+
 //GET SINGLE ITEM FROM WISHLIST
 exports.get_wishlist_item_control = (req, res, next) => {
-  const id = req.params.wishlistId;
-  Wishlist.findById(id)
-    .select("product _id")
-    .populate("product")
+  const wishlistId = req.params.wishlistId;
+  Wishlist.findById(wishlistId)
+    .populate("product") // populate the 'product' field with the details of the product
     .exec()
-    .then((doc) => {
-      console.log("From database", doc);
-      if (doc) {
-        res.status(200).json({
-          wishlist: doc,
-          request: {
-            type: "GET",
-            url: "http://localhost:3000/wishlist",
-          },
+    .then((wishlistItem) => {
+      if (!wishlistItem) {
+        return res.status(404).json({
+          message: "Wishlist item not found",
         });
-      } else {
-        res
-          .status(404)
-          .json({ message: "No valid entry found for provided ID" });
       }
+      res.status(200).json({
+        wishlistItem: wishlistItem,
+        request: {
+          type: "GET",
+          url: "http://localhost:3000/wishlist/" + wishlistId,
+        },
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
     });
 };
+
+
+
+
 
 //MOVE ITEM FROM WISHLIST TO CART
 exports.move_to_cart = (req, res, next) => {

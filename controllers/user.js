@@ -71,7 +71,7 @@ exports.login_user_control = (req, res, next) => {
           });
         }
         if (result) {
-          req.session.user_id = user._id;
+          //req.session.user_id = user._id;
           console.log(result);
           const token = jwt.sign(
             {

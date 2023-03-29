@@ -6,15 +6,15 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const app = express();
 const port = process.env.PORT ;
-const session = require("express-session");
+// const session = require("express-session");
 
-app.use(
-  session({
-    secret: "secret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+// app.use(
+//   session({
+//     secret: "secret",
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
 
 
 //routes
