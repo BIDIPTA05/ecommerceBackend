@@ -8,7 +8,7 @@ const Wishlist = require("../models/wishlist");
 //ALL ITEMS IN WISHLIST user specific
 exports.get_wishlist_control = (req, res, next) => {
   Wishlist.find({ userId: req.userData.userId })
-    .populate("product")
+    .populate("product userId", "name price _id")
     .exec()
     .then((wishlist) => {
       if (wishlist.length == 0) {
@@ -23,6 +23,7 @@ exports.get_wishlist_control = (req, res, next) => {
             _id: item._id,
             product: item.productId,
             name: item.name,
+            userId: item.userId,
             request: {
               type: "GET",
               url: "http://localhost:3000/wishlist/" + item._id,
@@ -92,12 +93,13 @@ exports.create_wishlist_control = (req, res, next) => {
       message: "You are not authorized to add to wishlist",
     });
   }
-  Product.findById(req.body.productId)
-    .then((product) => {
-      if (!product) {
-        return res.status(404).json({
-          message: "Product not found",
-        });
+ Wishlist.find({ product: req.body.productId })
+    .exec()
+    .then((wishlist) => {
+      if (wishlist.length >= 1) {
+        return res.status(409).json({
+          message: "Product already in wishlist",
+        })
       }
       else {
         const wishlist = new Wishlist({
@@ -168,6 +170,11 @@ exports.delete_wishlist_control = (req, res, next) => {
   Wishlist.findByIdAndDelete(wishlistItemId)
     .exec()
     .then((result) => {
+      if (!result) {
+        return res.status(404).json({
+          message: " Item not found",
+        }); 
+      }
       res.status(200).json({
         message: "Product removed from wishlist",
         request: {
