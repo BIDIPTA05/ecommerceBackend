@@ -1,8 +1,5 @@
-//const Wishlist = require("../models/wishlist");
-const Product = require("../models/product");
 const mongoose = require("mongoose");
 const Cart = require("../models/cart");
-const User = require("../models/user");
 const Wishlist = require("../models/wishlist");
 
 //ALL ITEMS IN WISHLIST user specific
@@ -85,7 +82,6 @@ exports.get_wishlist_control = (req, res, next) => {
 
 //ADD TO WISHLIST of specific loged in user
 exports.create_wishlist_control = (req, res, next) => {
-
   if (req.userData.userId == null) {
     return res.status(401).json({
       message: "You are not authorized to add to wishlist",

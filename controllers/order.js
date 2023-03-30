@@ -1,26 +1,26 @@
 const Product = require("../models/product");
-const Order = require("../models/order")
+const Order = require("../models/order");
 const mongoose = require("mongoose");
 
+//FETCH ALL ORDERS
 exports.get_order_control = (req, res, next) => {
-  Order.find()
-    .select("product quantity _id ")
-    .populate("product", "name price")
+  Order.find({ userId: req.userData.userId })
+    .populate("product")
     .exec()
-    .then((docs) => {
+    .then((orders) => {
       res.status(200).json({
-        count: docs.length,
+        count: orders.length,
         message: "Orders were fetched",
-        orders: docs.map((doc) => {
+        orders: orders.map((order) => {
           return {
-            _id: doc._id,
-            product: doc.product,
-            quantity: doc.quantity,
-            date: doc.date,
+            _id: order._id,
+            product: order.product,
+            quantity: order.quantity,
+            date: order.date,
 
             request: {
               type: "GET",
-              url: "http://localhost:3000/orders/" + doc._id,
+              url: "http://localhost:3000/orders/" + order._id,
             },
           };
         }),
@@ -35,53 +35,68 @@ exports.get_order_control = (req, res, next) => {
 };
 
 
+//CREATE AN ORDER
 exports.create_order_control = (req, res, next) => {
-  Product.findById(req.body.productId)
+  if (req.userData.userId == null) {
+    return res.status(401).json({
+      message: "You are not authorized to order ",
+    });
+  }
+  Product.find({ product: req.body.productId })
     .then((product) => {
-      console.log(product);
       if (!product) {
         return res.status(404).json({
           message: "Product not found",
         });
-      }
-      const order = new Order({
-        _id: new mongoose.Types.ObjectId(),
-        quantity: req.body.quantity,
-        product: req.body.productId,
-        name: req.body.name,
-        date : req.body.date
-      })
-        .save()
-        .then((result) => {
-          console.log(result);
-          res.status(201).json({
-            message: "Order created",
-            createdOrder: {
-              _id: result._id,
-              product: result.product,
-              quantity: result.quantity,
-              date: result.date
-            },
-            request: {
-              type: "GET",
-              url: "http://localhost:3000/orders/" + result._id,
-            },
-          });
+      } else {
+        const order = new Order({
+          _id: new mongoose.Types.ObjectId(),
+          userId: req.userData.userId,
+          product: req.body.productId,
+          quantity: req.body.quantity || 1,
         });
+        order
+          .save()
+          .then((result) => {
+            console.log(result);
+            res.status(201).json({
+              message: "Order created",
+              createdOrder: {
+                _id: result._id,
+                userId: result.userId,
+                product: result.product,
+                quantity: result.quantity,
+                date: result.date,
+                request: {
+                  type: "GET",
+                  url: "http://localhost:3000/orders/" + result._id,
+                },
+              },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
     })
     .catch((err) => {
       console.log(err);
       res.status(500).json({
-        message: "Product not found",
         error: err,
       });
     });
 };
 
 
+
+//FETCH A SINGLE ORDER
 exports.fetch_Singleorder_control = (req, res, next) => {
+  const orderId = req.params.orderId;
   Order.findById(req.params.orderId)
-    .populate("product", "name price")
+    .populate("product")
     .exec()
     .then((order) => {
       if (!order) {
@@ -106,6 +121,8 @@ exports.fetch_Singleorder_control = (req, res, next) => {
     });
 };
 
+
+//DELETE AN ORDER
 exports.delete_order_control = (req, res, next) => {
   Order.findByIdAndDelete({ _id: req.params.orderId })
     .exec()
