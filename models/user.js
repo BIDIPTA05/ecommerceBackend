@@ -13,8 +13,10 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
 
   isSuperAdmin: { type: Boolean, default: false },
+
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Wishlist" }],
+  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
   
-  wishlists: [{ type: mongoose.Schema.Types.ObjectId, ref: "Wishlist" }],
 });
 
 module.exports = mongoose.model("User", userSchema);

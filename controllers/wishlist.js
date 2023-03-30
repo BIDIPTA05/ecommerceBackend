@@ -41,8 +41,6 @@ exports.get_wishlist_control = (req, res, next) => {
 };
 
 
-
-
 //ADD ITEM TO WISHLIST
 // exports.create_wishlist_control = (req, res, next) => {
 //   Wishlist.find({ product: req.body.productId })
