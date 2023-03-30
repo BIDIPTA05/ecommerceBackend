@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Cart = require("../models/cart");
 const Wishlist = require("../models/wishlist");
+const Product = require("../models/product");
 
 //ALL ITEMS IN WISHLIST user specific
 exports.get_wishlist_control = (req, res, next) => {
@@ -87,45 +88,55 @@ exports.create_wishlist_control = (req, res, next) => {
       message: "You are not authorized to add to wishlist",
     });
   }
- Wishlist.find({ product: req.body.productId })
+  Product.findById(req.body.productId)
     .exec()
-    .then((wishlist) => {
-      if (wishlist.length >= 1) {
-        return res.status(409).json({
-          message: "Product already in wishlist",
-        })
-      }
-      else {
-        const wishlist = new Wishlist({
-          _id: new mongoose.Types.ObjectId(),
-          userId: req.userData.userId, // Get the user ID from the decoded token
-          product: req.body.productId,
+    .then((product) => {
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
         });
-        console.log({ wishlist });
-        wishlist
-          .save()
-          .then((result) => {
-            console.log(wishlist);
-
-            res.status(201).json({
-              message: "Product added to wishlist",
-              createdWishlist: {
-                _id: result._id,
-                product: result.product,
-                request: {
-                  type: "GET",
-                  url: "http://localhost:3000/wishlist/" + result._id,
-                },
-              },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-              error: err,
-            });
-          });
       }
+
+      Wishlist.find({ product: req.body.productId })
+        .exec()
+        .then((wishlist) => {
+          if (wishlist.length >= 1) {
+            return res.status(409).json({
+              message: "Product already in wishlist",
+            })
+          }
+          else {
+            const wishlist = new Wishlist({
+              _id: new mongoose.Types.ObjectId(),
+              userId: req.userData.userId, // Get the user ID from the decoded token
+              product: req.body.productId,
+            });
+            console.log({ wishlist });
+            wishlist
+              .save()
+              .then((result) => {
+                console.log(wishlist);
+
+                res.status(201).json({
+                  message: "Product added to wishlist",
+                  createdWishlist: {
+                    _id: result._id,
+                    product: result.product,
+                    request: {
+                      type: "GET",
+                      url: "http://localhost:3000/wishlist/" + result._id,
+                    },
+                  },
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                  error: err,
+                });
+              });
+          }
+        })
     })
     .catch((err) => {
       console.log(err);
@@ -244,7 +255,8 @@ exports.move_to_cart = (req, res, next) => {
       } else {
         // create a new cart item with the wishlist product details
           const cartItem = new Cart({
-         _id: new mongoose.Types.ObjectId(),
+            _id: new mongoose.Types.ObjectId(),
+            userId: wishlistItem.userId,
           product: wishlistItem.product,
           name: wishlistItem.name,
         });
@@ -263,6 +275,8 @@ exports.move_to_cart = (req, res, next) => {
                     _id: result._id,
                     product: result.product,
                     name: result.name,
+                    userId : result.userId,
+
                     request: {
                       type: "GET",
                       url: "http://localhost:3000/cart/" + result._id,

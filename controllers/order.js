@@ -123,6 +123,7 @@ exports.fetch_Singleorder_control = (req, res, next) => {
 };
 
 
+
 //DELETE AN ORDER
 exports.delete_order_control = (req, res, next) => {
   Order.findByIdAndDelete({ _id: req.params.orderId })

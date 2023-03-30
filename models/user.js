@@ -15,7 +15,10 @@ const userSchema = mongoose.Schema({
   isSuperAdmin: { type: Boolean, default: false },
 
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Wishlist" }],
+
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+
+  cart : [ { type: mongoose.Schema.Types.ObjectId, ref: "Cart" }]
   
 });
 
