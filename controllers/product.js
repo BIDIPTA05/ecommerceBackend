@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 //GET ALL PRODUCTS
 exports.get_product_control = (req, res, next) => {
   Product.find()
-    .select("name price _id")
+    .select("name price _id rating category description productImage")
     .exec()
     .then((docs) => {
       message: "Handling GET requests to /products", console.log(docs);
@@ -15,7 +15,8 @@ exports.get_product_control = (req, res, next) => {
           return {
             name: doc.name,
             price: doc.price,
-            rating : doc.rating,
+            rating: doc.rating,
+            category: doc.category,
             _id: doc._id,
             request: {
               type: "GET",
@@ -41,7 +42,10 @@ exports.post_product_control = (req, res, next) => {
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
-    rating:req.body.rating
+    rating: req.body.rating,
+    category: req.body.category,
+    description: req.body.description,
+    productImage: req.body.productImage
   });
   product
     .save()
@@ -52,7 +56,9 @@ exports.post_product_control = (req, res, next) => {
         createdProduct: {
           name: result.name,
           price: result.price,
-          rating:result.rating,
+          rating: result.rating,
+          category: result.category,
+          description: result.description,
           _id: result._id,
           request: {
             type: "GET",

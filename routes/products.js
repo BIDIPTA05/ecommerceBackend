@@ -6,7 +6,7 @@ const isSuperAdmin = require("../middleware/isAdmin")
 
 
 //GET ROUTE- GET ALL PRODUCTS
-router.get("/",isSuperAdmin, productController.get_product_control);
+router.get("/", productController.get_product_control);
 
 //POST ROUTE- UPLOAD A PRODUCT
 router.post("/", checkAuth, productController.post_product_control);
