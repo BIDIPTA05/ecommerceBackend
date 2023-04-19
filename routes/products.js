@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const checkAuth = require("../middleware/auth_check");
 const productController = require("../controllers/product");
-const isSuperAdmin = require("../middleware/isAdmin")
-
+const isSuperAdmin = require("../middleware/isAdmin");
 
 //GET ROUTE- GET ALL PRODUCTS
 router.get("/", productController.get_product_control);
@@ -15,10 +14,19 @@ router.post("/", checkAuth, productController.post_product_control);
 router.get("/:productId", productController.getSingle_product_control);
 
 //UPDATE PRODUCT ROUTE
-router.patch("/:productId", checkAuth, productController.update_product_control);
+router.patch(
+  "/:productId",
+  checkAuth,
+  productController.update_product_control
+);
 
 //DELETE PRODUCT ROUTE
-router.delete("/:productId", checkAuth, productController.delete_product_control);
+router.delete(
+  "/:productId",
+  isSuperAdmin,
+  checkAuth,
+  productController.delete_product_control
+);
 
 //EXPORTING TO USE IN DIFFERENT PLACES
 module.exports = router;
