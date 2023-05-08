@@ -1,10 +1,8 @@
-const User = require("../models/user")
+const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
-
-
 
 //NEW USER CREATE
 exports.create_user_control = (req, res, next) => {
@@ -29,8 +27,6 @@ exports.create_user_control = (req, res, next) => {
               password: hash,
             });
 
-            
-            
             user
               .save()
               .then((result) => {
@@ -51,6 +47,19 @@ exports.create_user_control = (req, res, next) => {
     });
 };
 
+
+const response = async () =>
+  await fetch(`${API_BASE_URL}/users/signup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      email,
+      password,
+    }),
+  });
 
 //LOGIN USER
 exports.login_user_control = (req, res, next) => {
@@ -81,17 +90,16 @@ exports.login_user_control = (req, res, next) => {
             process.env.JWT_KEY,
             { expiresIn: "1h" }
           );
-          
+
           console.log(token);
           return res.status(200).json({
             message: "Successfully Logged in",
             token: token,
           });
-          
-          console.log(req.session);
+
           
         }
-        
+
         return res.status(401).json({
           message: "Invalid Auth",
         });
@@ -105,6 +113,7 @@ exports.login_user_control = (req, res, next) => {
       });
     });
 };
+
 
 
 //DELETE AN USER
@@ -150,7 +159,6 @@ exports.get_allUsers_control = (req, res, next) => {
     });
 };
 
-
 //SET AN USER AS SUPER ADMIN
 // exports.set_super_admin = (req, res, next)=>{
 //   const userId = req.params.userId;
@@ -176,25 +184,23 @@ exports.get_allUsers_control = (req, res, next) => {
 //     })
 // }
 
-
 //GET ALL SUPER ADMINS
 exports.get_super_admin = (req, res, next) => {
-  User.find({ isSuperAdmin : true })
+  User.find({ isSuperAdmin: true })
     .exec()
     .then((users) => {
-      
-        res.status(200).json({
-          count: users.length,
-          message: "List of Super Admins fetched",
-          superAdmins: users.map((users) => {
-            return {
-              _id: users._id,
-              name: users.name,
-              email: users.email,
-            };
-          }),
-        });
-      })
+      res.status(200).json({
+        count: users.length,
+        message: "List of Super Admins fetched",
+        superAdmins: users.map((users) => {
+          return {
+            _id: users._id,
+            name: users.name,
+            email: users.email,
+          };
+        }),
+      });
+    })
 
     .catch((err) => {
       console.log(err);
@@ -202,4 +208,4 @@ exports.get_super_admin = (req, res, next) => {
         error: err,
       });
     });
-}
+};

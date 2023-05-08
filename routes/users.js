@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user");
+const checkAuth = require("../middleware/auth_check");
 
 //CREATE AN USER
 router.post("/signup", userController.create_user_control);
 
 //LOGIN A USER
-router.post("/login", userController.login_user_control);
+router.post("/login",checkAuth, userController.login_user_control);
 
 //DELETE A USER
 router.delete("/:userId", userController.delete_user_control);
